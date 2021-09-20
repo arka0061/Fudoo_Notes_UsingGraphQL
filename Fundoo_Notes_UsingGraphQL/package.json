@@ -1,0 +1,18 @@
+{
+  "name": "fundoo_notes_usinggraphql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.5.3",
+    "mongoose": "^6.0.6",
+    "nodemon": "^2.0.12"
+  }
+}
