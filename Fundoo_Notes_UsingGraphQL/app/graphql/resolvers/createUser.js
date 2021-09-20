@@ -1,5 +1,5 @@
 const userModel=require('../../models/user.model.js');
-module.exports= createUser=(args)=>{
+module.exports={ createUser:args=>{
     const usermodel=new userModel({
        firstName:args.userInput.firstName,
        lastName:args.userInput.lastName,
@@ -8,4 +8,5 @@ module.exports= createUser=(args)=>{
    })
    usermodel.save();
    return usermodel;
+}
 }
