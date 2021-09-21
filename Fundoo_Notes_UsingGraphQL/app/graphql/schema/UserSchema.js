@@ -17,12 +17,18 @@ module.exports=buildSchema(`
         email:String!
         password:String!
     }
+    type authUser
+    {
+        _id:ID!
+        token:String!
+        firstName:String!
+    }
     type RootQuery{
         users:[User!]!
     }
     type RootMutation{
         createUser( userInput:UserInput):User
-        loginUser( loginInput:LoginInput):User
+        loginUser( loginInput:LoginInput):authUser
     }
         schema {
             query:RootQuery
