@@ -19,15 +19,22 @@ module.exports=buildSchema(`
     }
     type authUser
     {
-        _id:ID!
-        token:String!
-        firstName:String!
+        _id:ID
+        token:String
+        firstName:String
+        success:Boolean!
+        message:String!
+    }
+    type errorStatus
+    {
+        success:Boolean!
+        message:String!
     }
     type RootQuery{
         users:[User!]!
     }
     type RootMutation{
-        createUser( userInput:UserInput):User
+        createUser( userInput:UserInput):errorStatus
         loginUser( loginInput:LoginInput):authUser
     }
         schema {

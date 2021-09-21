@@ -10,11 +10,18 @@ module.exports = {
         try {
             const userPresent = await userModel.findOne({ email: args.loginInput.email });
             if (!userPresent) {
-                throw new Error('User Not Present')
+                return {
+                    success: false,
+                    message: 'Invalid username'
+                }
             }
             const check = await bcrypt.compare(args.loginInput.password, userPresent.password)
+            console.log(check)
             if (!check) {
-                throw new Error('Invalid password')
+                return {               
+                    success: false,
+                    message: 'Invalid Password'
+                }
             }
             const token = jwt.sign({
                 id: userPresent.id,
@@ -23,11 +30,14 @@ module.exports = {
             return {
                 _id: userPresent.id,
                 token: token,
-                firstName: userPresent.firstName
+                firstName: userPresent.firstName,
+                success: true,
+                message: 'Login Sucessful'
             }
         }
         catch (error) {
-            throw error;
+            throw new Error('Internal Error Occured')
+
         }
     }
 }

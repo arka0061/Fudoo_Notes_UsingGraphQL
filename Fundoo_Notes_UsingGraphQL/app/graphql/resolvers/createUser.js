@@ -11,19 +11,31 @@ module.exports = {
             })
             const existingUser = await userModel.findOne({ email: args.userInput.email });
             if (existingUser) {
-                throw new Error('User exists already.');
+                return ({
+                    success: false,
+                    message: 'User already exists',
+                });
             }
             bcryptPassword.hashpassword(args.userInput.password, (error, data) => {
                 if (data) {
                     usermodel.password = data;
                 }
+                else{
+                    throw error;
+                }
                 usermodel.save();
-                return
+                return;
             })
-            return usermodel;
+            return ({
+                success: true,
+                message: 'New User Created',
+            });
         }
         catch (error) {
-            throw error;
+            return ({
+                success: false,
+                message: 'Internal Error Occured',
+            });  
         }
     }
 }
