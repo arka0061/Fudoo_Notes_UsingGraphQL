@@ -5,7 +5,7 @@ class bcryptPassword {
         try{
         bcrypt.hash(details, saltRounds, function (err, hash) {
             if (err) {
-                throw err;
+                return callback(err, null);
             } else {
                 return callback(null, hash);
             }
