@@ -4,6 +4,6 @@ const loginUser=require('./loginUsers');
 const rootResolver = {
   ...createUser,
   ...loginUser,
-  users
+  ...users
 };
 module.exports = rootResolver;
