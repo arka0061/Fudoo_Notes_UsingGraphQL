@@ -1,24 +1,33 @@
 const userModel = require('../../models/user.model.js');
+const joiValidation = require('../../utilities/joiValidation.js')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-var tokenSaved = null;
-
 const JWT_SECRET = '@1287hbkjasbdque1db19b39u21adnkanjNjn@asdassd24v43b91b'
 
 module.exports = {
     loginUser: async args => {
         try {
+            const loginmodel = {
+                email: args.loginInput.email,
+                password: args.loginInput.password,
+            }
+            const loginValidation = joiValidation.authLogin.validate(loginmodel)
+            if (loginValidation.error) {
+                return ({
+                    success: false,
+                    message: loginValidation.error.message,
+                });
+            }
             const userPresent = await userModel.findOne({ email: args.loginInput.email });
             if (!userPresent) {
                 return {
                     success: false,
-                    message: 'Invalid username'
+                    message: 'Invalid email'
                 }
             }
             const check = await bcrypt.compare(args.loginInput.password, userPresent.password)
-            console.log(check)
             if (!check) {
-                return {               
+                return {
                     success: false,
                     message: 'Invalid Password'
                 }
