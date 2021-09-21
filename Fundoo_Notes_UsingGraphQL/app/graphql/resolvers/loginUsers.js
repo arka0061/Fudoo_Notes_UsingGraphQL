@@ -2,8 +2,6 @@ const userModel = require('../../models/user.model.js');
 const joiValidation = require('../../utilities/joiValidation.js')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const JWT_SECRET = '@1287hbkjasbdque1db19b39u21adnkanjNjn@asdassd24v43b91b'
-
 module.exports = {
     loginUser: async args => {
         try {
@@ -35,7 +33,7 @@ module.exports = {
             const token = jwt.sign({
                 id: userPresent.id,
                 firstName: userPresent.firstName
-            }, JWT_SECRET)
+            }, process.env.JWT_SECRET)
             return {
                 _id: userPresent.id,
                 token: token,

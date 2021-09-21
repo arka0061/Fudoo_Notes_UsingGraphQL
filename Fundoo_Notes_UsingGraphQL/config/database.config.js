@@ -1,9 +1,8 @@
-const url ='mongodb://localhost:27017/usergraphqlmodel'
 const mongoose = require('mongoose');
 exports.dbConnection=()=>{
 mongoose.Promise = global.Promise;
 // Connecting to the database
-mongoose.connect(url, {
+mongoose.connect(process.env.DB_URL, {
     useNewUrlParser: true
 }).then(() => {
     console.log("Successfully connected to the database");    
