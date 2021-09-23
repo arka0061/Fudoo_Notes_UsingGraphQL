@@ -18,7 +18,7 @@ class sendinfobymail {
       let mailOptions = {
         from: process.env.MAIL_USERNAME,
         to: details,
-        subject: 'Nodemailer Project',
+        subject: 'Password Reset FundooNotes',
         text: code
       };
 
