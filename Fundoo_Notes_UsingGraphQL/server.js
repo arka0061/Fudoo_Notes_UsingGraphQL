@@ -14,7 +14,7 @@ dbConfig.dbConnection();
 app.use('/graphql', graphqlHTTP({
     schema: graphqlSchema,
     rootValue: graphqlResolver,
-    graphiql: true
+    graphiql: true,
 }));
 
 app.listen(process.env.PORT, () => {

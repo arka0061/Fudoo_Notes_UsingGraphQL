@@ -4,6 +4,7 @@ const joiValidation = require('../../utilities/joiValidation.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('../../utilities/jwtToken');
 const sendinfobymail = require('../../utilities/sendinfobymail.js');
+const { GraphQLError } = require('graphql');
 const userResolvers = {
     //users query
     users: () => {
@@ -19,41 +20,29 @@ const userResolvers = {
                 email: args.userInput.email,
                 password: args.userInput.password,
             })
-            const registerValidation =  joiValidation.authRegister.validate(usermodel._doc)
+            const registerValidation = joiValidation.authRegister.validate(usermodel._doc)
             if (registerValidation.error) {
-                return ({
-                    success: false,
-                    message: registerValidation.error.message,
-                });
+                return new GraphQLError(registerValidation.error.message)
             }
             const existingUser = await userModel.findOne({ email: args.userInput.email });
             if (existingUser) {
-                return ({
-                    success: false,
-                    message: 'User already exists',
-                });
+                return new GraphQLError('User Already Exists');
             }
             bcryptPassword.hashpassword(args.userInput.password, (error, data) => {
                 if (data) {
                     usermodel.password = data;
                 }
-                else{
+                else {
                     throw error;
                 }
                 usermodel.save();
                 return;
             })
-            return ({
-                success: true,
-                message: 'New User Created',
-            });
+            return usermodel;
         }
         catch (error) {
             console.log(error)
-            return ({
-                success: false,
-                message: 'Internal Error Occured',
-            });  
+            return new GraphQLError('Internal Error Occured');
         }
     },
     //login user mutation
@@ -65,40 +54,31 @@ const userResolvers = {
             }
             const loginValidation = joiValidation.authLogin.validate(loginmodel)
             if (loginValidation.error) {
-                return ({
-                    success: false,
-                    message: loginValidation.error.message,
-                });
+                return new GraphQLError(loginValidation.error.message);
             }
             const userPresent = await userModel.findOne({ email: args.loginInput.email });
             if (!userPresent) {
-                return {
-                    success: false,
-                    message: 'Invalid email'
-                }
+                return new GraphQLError('Invalid Email id');
+
             }
             const check = await bcrypt.compare(args.loginInput.password, userPresent.password)
             if (!check) {
-                return {
-                    success: false,
-                    message: 'Invalid Password'
-                }
+                return new GraphQLError('Invalid Password');
             }
-        var token=jwt.getToken(userPresent);
-           if(!token)
-           {
-               throw error;
+            var token = jwt.getToken(userPresent);
+            if (!token) {
+                throw error;
 
-           } return {
+            } return {
                 _id: userPresent.id,
                 token: token,
                 firstName: userPresent.firstName,
-                success: true,
-                message: 'Login Sucessful'
+                lastName: userPresent.lastName,
+                email: userPresent.email
             }
         }
         catch (error) {
-            throw new Error('Internal Error Occured')
+            return new GraphQLError('Internal Error Occured');
         }
     },
 
@@ -107,50 +87,33 @@ const userResolvers = {
         try {
             const userPresent = await userModel.findOne({ email: args.forgetInput.email });
             if (!userPresent) {
-                return ({
-                    success: false,
-                    message: 'User is not registered',
-                });
+                return new GraphQLError('User is not Registered');
             }
             sendinfobymail.getMailDetails(userPresent.email, (error, data) => {
                 if (!data) {
-                    return ({
-                        success: false,
-                        message: 'Failed to send Email',
-                    });
+                    return new GraphQLError('Failed to Send Email');
                 }
             })
             return ({
-                success: true,
-                message: 'Email Sent',
+                email: userPresent.email
             });
         }
         catch (error) {
             console.log(error)
-            return ({
-                success: false,
-                message: 'Internal Error Occured',
-            });
+            return new GraphQLError('Internal Error Occured');
         }
-
     },
+
     //reset password mutation
     resetpassword: async args => {
         try {
             const userPresent = await userModel.findOne({ email: args.resetInput.email });
             if (!userPresent) {
-                return ({
-                    success: false,
-                    message: 'User is not registered',
-                });
+                return new GraphQLError('User is not Registered');
             }
             const checkCode = sendinfobymail.sendCode(args.resetInput.mailcode)
             if (checkCode == "false") {
-                return ({
-                    success: false,
-                    message: 'Invalid Mail Code',
-                });
-
+                return new GraphQLError('Invalid mailcode');
             }
             bcryptPassword.hashpassword(args.resetInput.newpassword, (error, data) => {
                 if (data) {
@@ -158,21 +121,18 @@ const userResolvers = {
                     userPresent.save();
                 }
                 else {
-                    throw error;
+                    return new GraphQLError('Internal Error Occured');
                 }
             })
             return ({
-                success: true,
-                message: 'password changed',
+                email: userPresent.email,
+                newpassword: args.resetInput.newpassword
             });
 
         }
         catch (error) {
             console.log(error)
-            return ({
-                success: false,
-                message: 'Internal Error Occured',
-            });
+            return new GraphQLError('Internal Error Occured');
         }
     }
 }

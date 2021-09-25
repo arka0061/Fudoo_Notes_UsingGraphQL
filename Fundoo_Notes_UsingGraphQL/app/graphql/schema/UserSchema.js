@@ -23,8 +23,17 @@ module.exports=buildSchema(`
     }
     input ResetPass
     {
+        email:String!
+        mailcode:String!
+        newpassword:String!
+    }
+    type forgotReturn
+    {
         email:String
-        mailcode:String
+    }
+    type resetReturn
+    {
+        email:String
         newpassword:String
     }
     type authUser
@@ -32,22 +41,17 @@ module.exports=buildSchema(`
         _id:ID
         token:String
         firstName:String
-        success:Boolean!
-        message:String!
-    }
-    type errorStatus
-    {
-        success:Boolean!
-        message:String!
+        lastName:String
+        email:String
     }
     type RootQuery{
         users:[User!]!
     }
     type RootMutation{
-        createUser( userInput:UserInput):errorStatus
-        forgotpassword( forgetInput:ForgotPass):errorStatus
+        createUser( userInput:UserInput):User
+        forgotpassword( forgetInput:ForgotPass):forgotReturn
         loginUser( loginInput:LoginInput):authUser
-        resetpassword(resetInput:ResetPass):errorStatus
+        resetpassword(resetInput:ResetPass):resetReturn
     }
         schema {
             query:RootQuery
