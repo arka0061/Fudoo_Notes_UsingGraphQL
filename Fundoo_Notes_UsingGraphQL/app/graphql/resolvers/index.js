@@ -1,5 +1,8 @@
-const userResolvers=require('./userResolvers.js');
-const rootResolver = { 
-  ...userResolvers
-}
-module.exports = rootResolver;
+
+// const resolvers = { 
+//   ...userResolvers
+// }
+// module.exports = resolvers;
+module.exports= (
+  userResolvers=require('./userResolvers.js'))
+  

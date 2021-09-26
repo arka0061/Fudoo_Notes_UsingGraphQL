@@ -1,3 +1,3 @@
-module.exports= (
-  userSchema=require('./UserSchema.js'))
-  
+userSchema=require('./UserSchema')
+module.exports= [
+  userSchema]
