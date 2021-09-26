@@ -4,31 +4,33 @@ const joiValidation = require('../../utilities/joiValidation.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('../../utilities/jwtToken');
 const sendinfobymail = require('../../utilities/sendinfobymail.js');
-const { GraphQLError } = require('graphql');
+const { ApolloError } = require("apollo-server");
 const userResolvers = {
-    //users query
-    users: () => {
-        return userModel.find();
-    },
+    Query:{
+    users: async() => {
+        return await userModel.find();
+    }
+},
+Mutation:{
 
-    //create user mutation
-    createUser: async args => {
+ //create user mutation
+    createUser: async (_, {input}) => {
         try {
             const usermodel = new userModel({
-                firstName: args.userInput.firstName,
-                lastName: args.userInput.lastName,
-                email: args.userInput.email,
-                password: args.userInput.password,
+                firstName: input.firstName,
+                lastName: input.lastName,
+                email: input.email,
+                password: input.password,
             })
             const registerValidation = joiValidation.authRegister.validate(usermodel._doc)
             if (registerValidation.error) {
-                return new GraphQLError(registerValidation.error.message)
+                return new ApolloError(registerValidation.error,401,{sucess: false});
             }
-            const existingUser = await userModel.findOne({ email: args.userInput.email });
+            const existingUser = await userModel.findOne({ email: input.email });
             if (existingUser) {
-                return new GraphQLError('User Already Exists');
+                return new ApolloError('User Already Exists',409,{sucess: false});
             }
-            bcryptPassword.hashpassword(args.userInput.password, (error, data) => {
+            bcryptPassword.hashpassword(input.password, (error, data) => {
                 if (data) {
                     usermodel.password = data;
                 }
@@ -42,28 +44,28 @@ const userResolvers = {
         }
         catch (error) {
             console.log(error)
-            return new GraphQLError('Internal Error Occured');
+            return new ApolloError('Internal Error',500,{sucess: false});
         }
     },
     //login user mutation
-    loginUser: async args => {
+    loginUser: async (_,{input}) => {
         try {
             const loginmodel = {
-                email: args.loginInput.email,
-                password: args.loginInput.password,
+                email: input.email,
+                password: input.password,
             }
             const loginValidation = joiValidation.authLogin.validate(loginmodel)
             if (loginValidation.error) {
-                return new GraphQLError(loginValidation.error.message);
+                return new ApolloError(loginValidation.error,401,{sucess: false});
             }
-            const userPresent = await userModel.findOne({ email: args.loginInput.email });
+            const userPresent = await userModel.findOne({ email: input.email });
             if (!userPresent) {
-                return new GraphQLError('Invalid Email id');
+                return new ApolloError('Invalid Email id',403,{sucess: false});
 
             }
-            const check = await bcrypt.compare(args.loginInput.password, userPresent.password)
+            const check = await bcrypt.compare(input.password, userPresent.password)
             if (!check) {
-                return new GraphQLError('Invalid Password');
+                return new ApolloError('Invalid Password',403,{sucess: false});
             }
             var token = jwt.getToken(userPresent);
             if (!token) {
@@ -78,20 +80,20 @@ const userResolvers = {
             }
         }
         catch (error) {
-            return new GraphQLError('Internal Error Occured');
+            return new ApolloError('Internal Error',500,{sucess: false});
         }
     },
 
     //forgot password mutation
-    forgotpassword: async args => {
+    forgotpassword:  async (_,{input}) => {
         try {
-            const userPresent = await userModel.findOne({ email: args.forgetInput.email });
+            const userPresent = await userModel.findOne({ email: input.email });
             if (!userPresent) {
-                return new GraphQLError('User is not Registered');
+                return new ApolloError('User is not Registered',403,{sucess: false});
             }
             sendinfobymail.getMailDetails(userPresent.email, (error, data) => {
                 if (!data) {
-                    return new GraphQLError('Failed to Send Email');
+                    return new ApolloError('Failed to Send Email',424,{sucess: false});
                 }
             })
             return ({
@@ -99,42 +101,41 @@ const userResolvers = {
             });
         }
         catch (error) {
-            console.log(error)
-            return new GraphQLError('Internal Error Occured');
+            return new ApolloError('Internal Error',500,{sucess: false});
         }
     },
 
     //reset password mutation
-    resetpassword: async args => {
+    resetpassword: async (_,{input})=> {
         try {
-            const userPresent = await userModel.findOne({ email: args.resetInput.email });
+            const userPresent = await userModel.findOne({ email: input.email });
             if (!userPresent) {
-                return new GraphQLError('User is not Registered');
+                return new ApolloError('User is not Registered',403,{sucess: false});
             }
-            const checkCode = sendinfobymail.sendCode(args.resetInput.mailcode)
+            const checkCode = sendinfobymail.sendCode(input.mailcode)
             if (checkCode == "false") {
-                return new GraphQLError('Invalid mailcode');
+                return new ApolloError('Invalid mailcode',403,{sucess: false});
             }
-            bcryptPassword.hashpassword(args.resetInput.newpassword, (error, data) => {
+            bcryptPassword.hashpassword(input.newpassword, (error, data) => {
                 if (data) {
                     userPresent.password = data;
                     userPresent.save();
                 }
                 else {
-                    return new GraphQLError('Internal Error Occured');
+                    return new ApolloError('Internal Error',500,{sucess: false});
                 }
             })
             return ({
                 email: userPresent.email,
-                newpassword: args.resetInput.newpassword
+                newpassword: input.newpassword
             });
 
         }
         catch (error) {
             console.log(error)
-            return new GraphQLError('Internal Error Occured');
+            return new ApolloError('Internal Error',500,{sucess: false});
         }
     }
-}
+}}
 module.exports = userResolvers;
 

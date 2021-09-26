@@ -16,4 +16,4 @@ class bcryptPassword {
     }
 }
 }
-module.exports = new bcryptPassword();
+module.exports = new bcryptPassword()
