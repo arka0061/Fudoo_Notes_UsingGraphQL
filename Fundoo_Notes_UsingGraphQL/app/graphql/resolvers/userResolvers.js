@@ -4,7 +4,7 @@ const joiValidation = require('../../utilities/joiValidation.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('../../utilities/jwtToken');
 const sendinfobymail = require('../../utilities/sendinfobymail.js');
-const { ApolloError } = require("apollo-server");
+const ApolloError = require('apollo-server-errors');
 const userResolvers = {
     Query:{
     users: async() => {
@@ -24,11 +24,11 @@ Mutation:{
             })
             const registerValidation = joiValidation.authRegister.validate(usermodel._doc)
             if (registerValidation.error) {
-                return new ApolloError(registerValidation.error,401,{sucess: false});
+                return new ApolloError.ValidationError(registerValidation.error);
             }
             const existingUser = await userModel.findOne({ email: input.email });
             if (existingUser) {
-                return new ApolloError('User Already Exists',409,{sucess: false});
+                return new ApolloError.UserInputError('User Already Exists');
             }
             bcryptPassword.hashpassword(input.password, (error, data) => {
                 if (data) {
@@ -44,7 +44,7 @@ Mutation:{
         }
         catch (error) {
             console.log(error)
-            return new ApolloError('Internal Error',500,{sucess: false});
+            return new ApolloError.ApolloError("Internal Server Error");
         }
     },
     //login user mutation
@@ -56,16 +56,15 @@ Mutation:{
             }
             const loginValidation = joiValidation.authLogin.validate(loginmodel)
             if (loginValidation.error) {
-                return new ApolloError(loginValidation.error,401,{sucess: false});
+                return new ApolloError.ValidationError(loginValidation.error);
             }
             const userPresent = await userModel.findOne({ email: input.email });
             if (!userPresent) {
-                return new ApolloError('Invalid Email id',403,{sucess: false});
-
+                return new ApolloError.AuthenticationError("Invalid Email id",{email:"Not Found"})
             }
             const check = await bcrypt.compare(input.password, userPresent.password)
             if (!check) {
-                return new ApolloError('Invalid Password',403,{sucess: false});
+                return new ApolloError.AuthenticationError("Invalid password",{password:"Does Not Match"})
             }
             var token = jwt.getToken(userPresent);
             if (!token) {
@@ -80,7 +79,7 @@ Mutation:{
             }
         }
         catch (error) {
-            return new ApolloError('Internal Error',500,{sucess: false});
+            return new ApolloError.ApolloError("Internal Server Error");
         }
     },
 
@@ -89,11 +88,11 @@ Mutation:{
         try {
             const userPresent = await userModel.findOne({ email: input.email });
             if (!userPresent) {
-                return new ApolloError('User is not Registered',403,{sucess: false});
+                return new ApolloError.AuthenticationError("User is not Registered",{email:"Not Registered"})
             }
             sendinfobymail.getMailDetails(userPresent.email, (error, data) => {
                 if (!data) {
-                    return new ApolloError('Failed to Send Email',424,{sucess: false});
+                    return new ApolloError.ApolloError("Failed to send Email");
                 }
             })
             return ({
@@ -101,7 +100,7 @@ Mutation:{
             });
         }
         catch (error) {
-            return new ApolloError('Internal Error',500,{sucess: false});
+            return new ApolloError.ApolloError("Internal Server Error");
         }
     },
 
@@ -110,11 +109,11 @@ Mutation:{
         try {
             const userPresent = await userModel.findOne({ email: input.email });
             if (!userPresent) {
-                return new ApolloError('User is not Registered',403,{sucess: false});
+                return new ApolloError.AuthenticationError("User is not Registered",{email:"Not Registered"})
             }
             const checkCode = sendinfobymail.sendCode(input.mailcode)
             if (checkCode == "false") {
-                return new ApolloError('Invalid mailcode',403,{sucess: false});
+                return new ApolloError.AuthenticationError("Invalid mailcode",{mailcode:"Does Not Match"})
             }
             bcryptPassword.hashpassword(input.newpassword, (error, data) => {
                 if (data) {
@@ -122,7 +121,7 @@ Mutation:{
                     userPresent.save();
                 }
                 else {
-                    return new ApolloError('Internal Error',500,{sucess: false});
+                    return new ApolloError.ApolloError("Internal Server Error");
                 }
             })
             return ({
@@ -133,7 +132,7 @@ Mutation:{
         }
         catch (error) {
             console.log(error)
-            return new ApolloError('Internal Error',500,{sucess: false});
+            return new ApolloError.ApolloError("Internal Server Error");
         }
     }
 }}
