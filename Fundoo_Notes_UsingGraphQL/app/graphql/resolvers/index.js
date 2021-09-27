@@ -1,8 +1,7 @@
-
-// const resolvers = { 
+// const resolvers = {
 //   ...userResolvers
 // }
 // module.exports = resolvers;
-module.exports= (
-  userResolvers=require('./userResolvers.js'))
-  
+module.exports = (
+  // eslint-disable-next-line no-multi-assign
+  userResolvers = require('./userResolvers'));
