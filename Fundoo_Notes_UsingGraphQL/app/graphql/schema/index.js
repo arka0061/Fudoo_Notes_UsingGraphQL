@@ -1,3 +1,4 @@
-userSchema=require('./UserSchema')
-module.exports= [
-  userSchema]
+userSchema = require('./UserSchema');
+
+module.exports = [
+  userSchema];
