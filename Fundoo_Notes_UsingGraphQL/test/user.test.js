@@ -8,17 +8,13 @@ const userSchema = fs.readFileSync(
   "utf8"
 );
 
-describe("Mock queries and mutations", () => {
+describe("Query", () => {
   let tester;
   beforeAll(() => {
     tester = new EasyGraphQLTester(userSchema);
   });
 
-  // afterAll(() => {
-  //   tester.clearFixture();
-  // });
-
-  test("your mocks here", () => {
+  test("Mocking User Query", () => {
     const query = `
     query
     {

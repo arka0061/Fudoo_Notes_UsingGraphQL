@@ -5,6 +5,7 @@ const bcryptPassword = require('../../utilities/bcrpytpassword');
 const joiValidation = require('../../utilities/joiValidation');
 const jwt = require('../../utilities/jwtToken');
 const sendinfobymail = require('../../utilities/sendinfobymail');
+const { string } = require('joi');
 
 const userResolvers = {
 
@@ -21,6 +22,8 @@ const userResolvers = {
           lastName: input.lastName,
           email: input.email,
           password: input.password,
+          tempCode:"temp code wl be here"
+       
         });
         const registerValidation = joiValidation.authRegister.validate(usermodel._doc);
         if (registerValidation.error) {
@@ -105,8 +108,9 @@ const userResolvers = {
         if (!userPresent) {
           return new ApolloError.AuthenticationError('User is not Registered', { email: 'Not Registered' });
         }
-        const checkCode = sendinfobymail.sendCode(input.mailcode);
+        const checkCode = sendinfobymail.sendCode(input.mailcode,userPresent);
         if (checkCode === 'false') {
+          console.log(checkCode);
           return new ApolloError.AuthenticationError('Invalid mailcode', { mailcode: 'Does Not Match' });
         }
         bcryptPassword.hashpassword(input.newpassword, (error, data) => {

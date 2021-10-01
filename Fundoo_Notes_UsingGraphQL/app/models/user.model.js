@@ -17,6 +17,9 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
         minlength: 5
+    },
+    tempCode:{
+        type: String
     }
 },
     {
