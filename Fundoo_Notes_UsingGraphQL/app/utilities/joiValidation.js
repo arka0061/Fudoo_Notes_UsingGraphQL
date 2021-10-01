@@ -20,7 +20,8 @@ class joiValidation {
             password: Joi.string()
                 .pattern(new RegExp('[A-Za-z0-9]{4,}[$&+,:;=?@#|<>.^*()%!-]{2,}'))
                 .required(),
-             _id: Joi.required()
+             _id: Joi.required(),
+             tempCode:Joi.string()
             
         })
 
