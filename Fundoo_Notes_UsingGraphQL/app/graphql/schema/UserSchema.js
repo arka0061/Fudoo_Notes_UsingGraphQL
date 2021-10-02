@@ -44,11 +44,23 @@ module.exports = gql(`
         firstName:String
         lastName:String
         email:String
+        getNotes:[Note]!
+    }
+    type Note{
+        title:String!
+        description:String!
+    }
+    input NoteInput{
+       email:String!
+       title:String!
+       description:String!
     }
     type Query{
         users:[User!]!
+        notes:[Note!]!
     }
     type Mutation{
+        createNote( input:NoteInput):Note
         createUser( input:UserInput):User
         forgotpassword( input:ForgotPass):forgotReturn
         loginUser( input:LoginInput):authUser

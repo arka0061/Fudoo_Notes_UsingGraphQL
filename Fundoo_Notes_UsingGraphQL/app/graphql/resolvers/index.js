@@ -1,7 +1,11 @@
 // const resolvers = {
 //   ...userResolvers
 // }
+
+
+
 // module.exports = resolvers;
-module.exports = (
+module.exports = [
   // eslint-disable-next-line no-multi-assign
-  userResolvers = require('./userResolvers'));
+  userResolvers = require('./userResolvers'),
+  noteResolvers=require('./noteResolvers')];

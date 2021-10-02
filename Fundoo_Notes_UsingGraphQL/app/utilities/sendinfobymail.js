@@ -46,9 +46,13 @@ class sendinfobymail {
   sendCode = (details, user) => {
     console.log(user.tempCode)
     if (details === user.tempCode) {
-      return "true"
+      return 'true'
     }
-    return "false"
+    if(user.tempCode==='expired')
+    {
+      return 'expired'
+    }
+    return 'false'
   }
 }
 module.exports = new sendinfobymail()
