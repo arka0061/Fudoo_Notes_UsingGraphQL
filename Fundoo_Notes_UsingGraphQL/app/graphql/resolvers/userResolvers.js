@@ -5,7 +5,7 @@ const bcryptPassword = require('../../utilities/bcrpytpassword');
 const joiValidation = require('../../utilities/joiValidation');
 const jwt = require('../../utilities/jwtToken');
 const sendinfobymail = require('../../utilities/sendinfobymail');
-const { string } = require('joi');
+const noteModel=require('../../models/note.model');
 
 const userResolvers = {
 
@@ -22,8 +22,7 @@ const userResolvers = {
           lastName: input.lastName,
           email: input.email,
           password: input.password,
-          tempCode:"temp code wl be here"
-       
+          tempCode:"temp code wl be here"   
         });
         const registerValidation = joiValidation.authRegister.validate(usermodel._doc);
         if (registerValidation.error) {
@@ -62,6 +61,11 @@ const userResolvers = {
         if (!userPresent) {
           return new ApolloError.AuthenticationError('Invalid Email id', { email: 'Not Found' });
         }
+        const notesPresent = await noteModel.find({ userId: userPresent._id });
+        if(!notesPresent)
+        {
+          notesPresent="No Notes Are Created By The User Yet"
+        }
         const check = await bcrypt.compare(input.password, userPresent.password);
         if (!check) {
           return new ApolloError.AuthenticationError('Invalid password', { password: 'Does Not Match' });
@@ -75,6 +79,7 @@ const userResolvers = {
           firstName: userPresent.firstName,
           lastName: userPresent.lastName,
           email: userPresent.email,
+          getNotes:notesPresent
         };
       } catch (error) {
         return new ApolloError.ApolloError('Internal Server Error');
@@ -112,6 +117,10 @@ const userResolvers = {
         if (checkCode === 'false') {
           console.log(checkCode);
           return new ApolloError.AuthenticationError('Invalid mailcode', { mailcode: 'Does Not Match' });
+        }
+        if(checkCode==='expired')
+        {
+          return new ApolloError.AuthenticationError('Code Expired', { mailcode: 'Expired' });
         }
         bcryptPassword.hashpassword(input.newpassword, (error, data) => {
           if (data) {
