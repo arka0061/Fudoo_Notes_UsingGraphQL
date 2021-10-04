@@ -32,7 +32,7 @@ class sendinfobymail {
           await userPresent.save();
           setTimeout(() => {
             console.log("MailCode Expired")
-            userPresent.tempCode="expired"
+            userPresent.tempCode = "expired"
             userPresent.save();
           }, 60000);
           return callback(null, "Email sent successfully")
@@ -48,8 +48,7 @@ class sendinfobymail {
     if (details === user.tempCode) {
       return 'true'
     }
-    if(user.tempCode==='expired')
-    {
+    if (user.tempCode === 'expired') {
       return 'expired'
     }
     return 'false'
