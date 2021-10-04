@@ -75,12 +75,18 @@ const noteResolvers = {
         if (notesToBeDeleted.length === 0) {
           return new ApolloError.UserInputError('Note with the given title does not exist');
         }
-        await noteModel.findByIdAndDelete(notesToBeDeleted)
-
-        return ({
-          title: checkNotes[0].title,
-          description: checkNotes[0].description
-        })
+        //console.log(notesToBeDeleted)
+        let index = 0;
+        while (index < notesToBeDeleted.length) {
+          if (existingUser.id === notesToBeDeleted[index].userId) {
+            await noteModel.findByIdAndDelete(notesToBeDeleted[index]);
+            return ({
+              title: notesToBeDeleted[index].title,
+              description: notesToBeDeleted[index].description
+            })
+          }
+          index++;
+        }
       }
       catch (error) {
         console.log(error);
