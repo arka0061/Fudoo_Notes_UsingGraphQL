@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server');
+const { gql } = require('apollo-server-express');
 
 module.exports = gql(`
     type User{
@@ -51,7 +51,6 @@ module.exports = gql(`
         description:String
     }
     input NoteInput{
-       email:String!
        title:String!
        description:String!
     }
