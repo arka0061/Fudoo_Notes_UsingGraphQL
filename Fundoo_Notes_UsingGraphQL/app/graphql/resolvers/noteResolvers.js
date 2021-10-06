@@ -13,9 +13,6 @@ const noteResolvers = {
           return new ApolloError.AuthenticationError('UnAuthenticated');
         }
         const existingUser = await userModel.findOne({ email: context.email });
-        if (!existingUser) {
-          return new ApolloError.UserInputError('User is Not Registered');
-        }
         const notemodel = new noteModel({
           title: input.title,
           description: input.description,
@@ -61,12 +58,12 @@ const noteResolvers = {
     //     return new ApolloError.ApolloError('Internal Server Error');
     //   }
     // },
-    deleteNote: async (_, { input }) => {
+    deleteNote: async (_, { input },context) => {
       try {
-        const existingUser = await userModel.findOne({ email: input.email });
-        if (!existingUser) {
-          return new ApolloError.UserInputError('User is Not Registered');
+        if (!context.id){      
+          return new ApolloError.AuthenticationError('UnAuthenticated');
         }
+        const existingUser = await userModel.findOne({ email: context.email });
         const checkNotes = await noteModel.find({ userId: existingUser._id });
         if (!checkNotes) {
           return new ApolloError.UserInputError('User has not created any notes till now');
