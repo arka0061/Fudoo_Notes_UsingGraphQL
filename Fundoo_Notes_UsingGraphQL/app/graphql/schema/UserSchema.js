@@ -51,7 +51,6 @@ module.exports = gql(`
         description:String
     }
     input NoteInput{
-       email:String!
        title:String!
        description:String!
     }

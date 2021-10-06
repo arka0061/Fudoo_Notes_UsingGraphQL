@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
-const ApolloError = require('apollo-server-errors');
-const { find } = require('../../models/user.model');
+
 
 module.exports = ({ req }) => {
     const token = req.headers.authorization || ''

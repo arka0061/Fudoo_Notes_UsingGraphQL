@@ -9,10 +9,10 @@ const noteResolvers = {
     // create note mutation
     createNote: async (_, { input },context) => {
       try {
-        if (!context.id){
+        if (!context.id){      
           return new ApolloError.AuthenticationError('UnAuthenticated');
         }
-        const existingUser = await userModel.findOne({ email: input.email });
+        const existingUser = await userModel.findOne({ email: context.email });
         if (!existingUser) {
           return new ApolloError.UserInputError('User is Not Registered');
         }
