@@ -107,15 +107,14 @@ const userResolvers = {
     },
 
     // reset password mutation
-    resetpassword: async (_, { input }) => {
+    resetpassword: async (_, { input },context) => {
       try {
-        const userPresent = await userModel.findOne({ email: input.email });
-        if (!userPresent) {
-          return new ApolloError.AuthenticationError('User is not Registered', { email: 'Not Registered' });
+        if (!context.id){      
+          return new ApolloError.AuthenticationError('UnAuthenticated');
         }
+        const userPresent = await userModel.findOne({ email: context.email });
         const checkCode = sendinfobymail.sendCode(input.mailcode,userPresent);
         if (checkCode === 'false') {
-          console.log(checkCode);
           return new ApolloError.AuthenticationError('Invalid mailcode', { mailcode: 'Does Not Match' });
         }
         if(checkCode==='expired')

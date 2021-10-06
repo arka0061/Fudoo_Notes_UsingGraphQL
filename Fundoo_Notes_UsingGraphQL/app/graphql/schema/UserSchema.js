@@ -24,7 +24,6 @@ module.exports = gql(`
     }
     input ResetPass
     {
-        email:String!
         mailcode:String!
         newpassword:String!
     }
@@ -56,7 +55,6 @@ module.exports = gql(`
     }
     input DeleteNote
     {
-        email:String!
         title:String!
     }
     type Query{
