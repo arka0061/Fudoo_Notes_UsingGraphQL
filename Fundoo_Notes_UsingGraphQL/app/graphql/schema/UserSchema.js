@@ -67,6 +67,7 @@ module.exports = gql(`
         notes:[Note!]!
     }
     type Mutation{
+        getNotes:[Note!]!
         createNote( input:NoteInput):Note
         editNote(input:NoteEdit):Note
         deleteNote(input:DeleteNote):Note

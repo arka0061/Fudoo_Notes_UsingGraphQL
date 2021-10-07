@@ -6,6 +6,23 @@ const noteResolvers = {
     notes: async () => await noteModel.find(),
   },
   Mutation: {
+    //getNotes Mutation
+    getNotes: async (_, { }, context) => {
+      try {
+        if (!context.id) {
+          return new ApolloError.AuthenticationError('UnAuthenticated');
+        }
+        const checkNotes = await noteModel.find({ emailId: context.email });
+        if (checkNotes.length === 0) {
+          return new ApolloError.UserInputError('User has not created any notes till now');
+        }
+        return checkNotes
+      }
+      catch (error) {
+        console.log(error);
+        return new ApolloError.ApolloError('Internal Server Error');
+      }
+    },
     // createnote mutation
     createNote: async (_, { input }, context) => {
       try {
@@ -27,7 +44,7 @@ const noteResolvers = {
       }
     },
     //editNote Mutation
-    editNote: async (_, { input },context) => {
+    editNote: async (_, { input }, context) => {
       try {
         if (!context.id) {
           return new ApolloError.AuthenticationError('UnAuthenticated');
@@ -39,10 +56,10 @@ const noteResolvers = {
         let index = 0;
         while (index < checkNotes.length) {
           if (checkNotes[index].id === input.noteId) {
-            await noteModel.findByIdAndUpdate(checkNotes[index],{
+            await noteModel.findByIdAndUpdate(checkNotes[index], {
               title: input.title || "Untitled",
-              description: input.description 
-          }, {new: true});
+              description: input.description
+            }, { new: true });
             return ({
               title: input.title,
               description: input.description
