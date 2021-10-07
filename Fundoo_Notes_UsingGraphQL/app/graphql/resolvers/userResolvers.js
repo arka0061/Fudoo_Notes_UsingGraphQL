@@ -61,7 +61,7 @@ const userResolvers = {
         if (!userPresent) {
           return new ApolloError.AuthenticationError('Invalid Email id', { email: 'Not Found' });
         }
-        const notesPresent = await noteModel.find({ userId: userPresent._id });
+        const notesPresent = await noteModel.find({ emailId: userPresent.email });
         if(!notesPresent)
         {
           notesPresent="No Notes Are Created By The User Yet"
