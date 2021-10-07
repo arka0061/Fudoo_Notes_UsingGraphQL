@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const { ObjectID } = require('typeorm');
 const noteSchema = mongoose.Schema({
-    userId:{
+    emailId:{
         type:String
     },
     title: {

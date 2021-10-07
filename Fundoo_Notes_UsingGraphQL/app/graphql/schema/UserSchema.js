@@ -53,9 +53,14 @@ module.exports = gql(`
        title:String!
        description:String!
     }
+    input NoteEdit
+    {   noteId:String!
+        title:String
+        description:String!
+    }
     input DeleteNote
     {
-        title:String!
+        noteId:String!
     }
     type Query{
         users:[User!]!
@@ -63,7 +68,7 @@ module.exports = gql(`
     }
     type Mutation{
         createNote( input:NoteInput):Note
-        editNote(input:NoteInput):Note
+        editNote(input:NoteEdit):Note
         deleteNote(input:DeleteNote):Note
         createUser( input:UserInput):User
         forgotpassword( input:ForgotPass):forgotReturn
