@@ -7,25 +7,17 @@ const noteResolvers = {
   },
   Mutation: {
     // create note mutation
-    createNote: async (_, { input },context) => {
+    createNote: async (_, { input }, context) => {
       try {
-        if (!context.id){      
+        if (!context.id) {
           return new ApolloError.AuthenticationError('UnAuthenticated');
         }
         const existingUser = await userModel.findOne({ email: context.email });
         const notemodel = new noteModel({
           title: input.title,
           description: input.description,
-          userId: existingUser._id,
+          emailId: existingUser.email,
         });
-        const existingTitle = await noteModel.find({ title: input.title });
-        let index = 0;
-        while (index < existingTitle.length) {
-          if (existingUser.id === existingTitle[index].userId) {
-            return new ApolloError.UserInputError('Title Already Exists');
-          }
-          index++;
-        }
         await notemodel.save();
         return notemodel;
       }
@@ -35,58 +27,58 @@ const noteResolvers = {
       }
     },
     //editNote Mutation
-    // editNote: async (_, { input }) => {
-    //   try {
-    //     const existingUser = await userModel.findOne({ email: input.email });
-    //     if (!existingUser) {
-    //       return new ApolloError.UserInputError('User is Not Registered');
-    //     }
-    //     const notemodel = new noteModel({
-    //       title: input.title,
-    //       description: input.description,
-    //       userId: existingUser._id,
-    //     });
-    //     const existingTitle = await noteModel.findOne({ title: input.title });
-    //     if (existingTitle) {
-
-    //     }
-    //     await notemodel.save();
-    //     return notemodel;
-    //   }
-    //   catch (error) {
-    //     console.log(error);
-    //     return new ApolloError.ApolloError('Internal Server Error');
-    //   }
-    // },
-    deleteNote: async (_, { input },context) => {
+    editNote: async (_, { input },context) => {
       try {
-        if (!context.id){      
+        if (!context.id) {
           return new ApolloError.AuthenticationError('UnAuthenticated');
         }
-        const existingUser = await userModel.findOne({ email: context.email });
-        const checkNotes = await noteModel.find({ userId: existingUser._id });
-        if (!checkNotes) {
+        const checkNotes = await noteModel.find({ emailId: context.email });
+        if (checkNotes.length === 0) {
           return new ApolloError.UserInputError('User has not created any notes till now');
         }
-        const findNotesWithTitle = await noteModel.find({ title: input.title });
-        if (findNotesWithTitle.userId === checkNotes.userId) {
-          var notesToBeDeleted = findNotesWithTitle
-        }
-        if (notesToBeDeleted.length === 0) {
-          return new ApolloError.UserInputError('Note with the given title does not exist');
-        }
-        //console.log(notesToBeDeleted)
         let index = 0;
-        while (index < notesToBeDeleted.length) {
-          if (existingUser.id === notesToBeDeleted[index].userId) {
-            await noteModel.findByIdAndDelete(notesToBeDeleted[index]);
+        while (index < checkNotes.length) {
+          if (checkNotes[index].id === input.noteId) {
+            await noteModel.findByIdAndUpdate(checkNotes[index],{
+              title: input.title || "Untitled",
+              description: input.description 
+          }, {new: true});
             return ({
-              title: notesToBeDeleted[index].title,
-              description: notesToBeDeleted[index].description
+              title: input.title,
+              description: input.description
             })
           }
           index++;
         }
+        return new ApolloError.UserInputError('Note with the given id was not found');
+      }
+      catch (error) {
+        console.log(error);
+        return new ApolloError.ApolloError('Internal Server Error');
+      }
+    },
+    //delete Note mutation
+    deleteNote: async (_, { input }, context) => {
+      try {
+        if (!context.id) {
+          return new ApolloError.AuthenticationError('UnAuthenticated');
+        }
+        const checkNotes = await noteModel.find({ emailId: context.email });
+        if (checkNotes.length === 0) {
+          return new ApolloError.UserInputError('User has not created any notes till now');
+        }
+        let index = 0;
+        while (index < checkNotes.length) {
+          if (checkNotes[index].id === input.noteId) {
+            await noteModel.findByIdAndDelete(checkNotes[index]);
+            return ({
+              title: checkNotes[index].title,
+              description: checkNotes[index].description
+            })
+          }
+          index++;
+        }
+        return new ApolloError.UserInputError('Note with the given id was not found');
       }
       catch (error) {
         console.log(error);
