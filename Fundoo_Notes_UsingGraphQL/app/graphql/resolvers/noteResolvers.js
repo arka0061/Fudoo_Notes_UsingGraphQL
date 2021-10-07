@@ -6,7 +6,7 @@ const noteResolvers = {
     notes: async () => await noteModel.find(),
   },
   Mutation: {
-    // create note mutation
+    // createnote mutation
     createNote: async (_, { input }, context) => {
       try {
         if (!context.id) {
