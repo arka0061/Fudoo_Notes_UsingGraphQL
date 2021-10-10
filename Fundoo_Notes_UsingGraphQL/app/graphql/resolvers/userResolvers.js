@@ -61,10 +61,10 @@ const userResolvers = {
         if (!userPresent) {
           return new ApolloError.AuthenticationError('Invalid Email id', { email: 'Not Found' });
         }
-        const notesPresent = await noteModel.find({ emailId: userPresent.email });
-        if(!notesPresent)
+        let notesPresent = await noteModel.find({ emailId: userPresent.email });
+        if(notesPresent.length===0)
         {
-          notesPresent="No Notes Are Created By The User Yet"
+          notesPresent=[{title:"No Notes Are Created By The User Yet",description:"null"}]
         }
         const check = await bcrypt.compare(input.password, userPresent.password);
         if (!check) {

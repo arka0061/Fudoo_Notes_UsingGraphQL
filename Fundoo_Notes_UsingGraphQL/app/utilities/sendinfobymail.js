@@ -34,7 +34,7 @@ class sendinfobymail {
             console.log("MailCode Expired")
             userPresent.tempCode = "expired"
             userPresent.save();
-          }, 60000);
+          }, 1200000);
           return callback(null, "Email sent successfully")
         }
       });

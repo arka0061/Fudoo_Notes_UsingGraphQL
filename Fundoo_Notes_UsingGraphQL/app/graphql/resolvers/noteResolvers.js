@@ -1,9 +1,18 @@
 const ApolloError = require('apollo-server-errors');
 const userModel = require('../../models/user.model');
 const noteModel = require('../../models/note.model');
+const mailModel = require('../../models/mail.model');
 const noteResolvers = {
   Query: {
-    notes: async () => await noteModel.find(),
+    notes: async () => 
+    {
+      const mailmodel=new mailModel({
+      
+        code:"SET Will Expire",
+        tempCode:"Set will not expire"
+      })
+     mailmodel.save();
+      await noteModel.find()}
   },
   Mutation: {
     //getNotes Mutation
@@ -57,12 +66,12 @@ const noteResolvers = {
         while (index < checkNotes.length) {
           if (checkNotes[index].id === input.noteId) {
             await noteModel.findByIdAndUpdate(checkNotes[index], {
-              title: input.title || "Untitled",
-              description: input.description
+              title: input.title || checkNotes[index].title,
+              description: input.description || checkNotes[index].description
             }, { new: true });
             return ({
-              title: input.title,
-              description: input.description
+              title: input.title || checkNotes[index].title,
+              description: input.description || checkNotes[index].description
             })
           }
           index++;
