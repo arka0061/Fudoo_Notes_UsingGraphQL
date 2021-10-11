@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const userModel = require('../models/user.model');
+const mailModel = require('../models/mail.model');
 class sendinfobymail {
   getMailDetails = (details, callback) => {
     try {
@@ -28,13 +29,11 @@ class sendinfobymail {
         } else {
           console.log("Email sent successfully");
           const userPresent = await userModel.findOne({ email: details });
-          userPresent.tempCode = code
-          await userPresent.save();
-          setTimeout(() => {
-            console.log("MailCode Expired")
-            userPresent.tempCode = "expired"
-            userPresent.save();
-          }, 60000);
+          const mailmodel = new mailModel({
+            mail: userPresent.email,
+            tempcode: code
+          })
+          await mailmodel.save();
           return callback(null, "Email sent successfully")
         }
       });
@@ -44,12 +43,8 @@ class sendinfobymail {
     }
   }
   sendCode = (details, user) => {
-    console.log(user.tempCode)
-    if (details === user.tempCode) {
+    if (details === user[0].tempcode) {
       return 'true'
-    }
-    if (user.tempCode === 'expired') {
-      return 'expired'
     }
     return 'false'
   }
