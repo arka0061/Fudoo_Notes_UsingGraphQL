@@ -18,9 +18,6 @@ const userSchema = mongoose.Schema({
         required: true,
         minlength: 5
     },
-    tempCode:{
-        type: String
-    }
 },
     {
         timestamps: true

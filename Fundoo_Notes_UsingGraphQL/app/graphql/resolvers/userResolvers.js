@@ -5,7 +5,8 @@ const bcryptPassword = require('../../utilities/bcrpytpassword');
 const joiValidation = require('../../utilities/joiValidation');
 const jwt = require('../../utilities/jwtToken');
 const sendinfobymail = require('../../utilities/sendinfobymail');
-const noteModel=require('../../models/note.model');
+const noteModel = require('../../models/note.model');
+const mailModel = require('../../models/mail.model');
 
 const userResolvers = {
 
@@ -22,7 +23,6 @@ const userResolvers = {
           lastName: input.lastName,
           email: input.email,
           password: input.password,
-          tempCode:"temp code wl be here"   
         });
         const registerValidation = joiValidation.authRegister.validate(usermodel._doc);
         if (registerValidation.error) {
@@ -62,9 +62,8 @@ const userResolvers = {
           return new ApolloError.AuthenticationError('Invalid Email id', { email: 'Not Found' });
         }
         let notesPresent = await noteModel.find({ emailId: userPresent.email });
-        if(notesPresent.length===0)
-        {
-          notesPresent=[{title:"No Notes Are Created By The User Yet",description:"null"}]
+        if (notesPresent.length === 0) {
+          notesPresent = [{ title: "No Notes Are Created By The User Yet", description: "null" }]
         }
         const check = await bcrypt.compare(input.password, userPresent.password);
         if (!check) {
@@ -79,7 +78,7 @@ const userResolvers = {
           firstName: userPresent.firstName,
           lastName: userPresent.lastName,
           email: userPresent.email,
-          getNotes:notesPresent
+          getNotes: notesPresent
         };
       } catch (error) {
         return new ApolloError.ApolloError('Internal Server Error');
@@ -93,6 +92,11 @@ const userResolvers = {
         if (!userPresent) {
           return new ApolloError.AuthenticationError('User is not Registered', { email: 'Not Registered' });
         }
+        const check=await mailModel.find({mail:input.email})
+       if(check.length!=0)
+       {
+        return new ApolloError.UserInputError('Mail code already sent');
+       }
         sendinfobymail.getMailDetails(userPresent.email, (error, data) => {
           if (!data) {
             return new ApolloError.ApolloError('Failed to send Email');
@@ -107,30 +111,34 @@ const userResolvers = {
     },
 
     // reset password mutation
-    resetpassword: async (_, { input },context) => {
+    resetpassword: async (_, { input }, context) => {
       try {
-        if (!context.id){      
+        if (!context.id) {
           return new ApolloError.AuthenticationError('UnAuthenticated');
         }
-        const userPresent = await userModel.findOne({ email: context.email });
-        const checkCode = sendinfobymail.sendCode(input.mailcode,userPresent);
+        const userPresent = await mailModel.find({ mail: context.email });
+        if(userPresent.length===0)
+        {
+         return new ApolloError.UserInputError('Mailcode expired');
+        }
+        const checkCode = sendinfobymail.sendCode(input.mailcode, userPresent);
         if (checkCode === 'false') {
           return new ApolloError.AuthenticationError('Invalid mailcode', { mailcode: 'Does Not Match' });
         }
-        if(checkCode==='expired')
-        {
+        if (checkCode === 'expired') {
           return new ApolloError.AuthenticationError('Code Expired', { mailcode: 'Expired' });
         }
+        const saveToUser = await userModel.findOne({ mail: context.email })
         bcryptPassword.hashpassword(input.newpassword, (error, data) => {
           if (data) {
-            userPresent.password = data;
-            userPresent.save();
+            saveToUser.password = data;
+            saveToUser.save();
           } else {
             return new ApolloError.ApolloError('Internal Server Error');
           }
         });
         return ({
-          email: userPresent.email,
+          email: context.email,
           newpassword: input.newpassword,
         });
       } catch (error) {

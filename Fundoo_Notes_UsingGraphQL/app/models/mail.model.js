@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const mailSchema = mongoose.Schema({
   mail:
     { type: String },
-  code:
+  tempcode:
     { type: String, },
   expireAt: {
     type: Date,
     default: Date.now,
-    index: { expires: '1m' },
+    index: { expireAfterSeconds: 60 },
   },
 });
 

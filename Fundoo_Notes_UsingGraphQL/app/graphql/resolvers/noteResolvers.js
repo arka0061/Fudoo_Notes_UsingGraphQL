@@ -1,18 +1,10 @@
 const ApolloError = require('apollo-server-errors');
 const userModel = require('../../models/user.model');
 const noteModel = require('../../models/note.model');
-const mailModel = require('../../models/mail.model');
+
 const noteResolvers = {
   Query: {
-    notes: async () => 
-    {
-      const mailmodel=new mailModel({
-      
-        code:"SET Will Expire",
-        tempCode:"Set will not expire"
-      })
-     mailmodel.save();
-      await noteModel.find()}
+    notes: async () =>await noteModel.find()
   },
   Mutation: {
     //getNotes Mutation

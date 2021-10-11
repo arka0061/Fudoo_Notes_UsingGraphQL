@@ -56,7 +56,7 @@ module.exports = gql(`
     input NoteEdit
     {   noteId:String!
         title:String
-        description:String!
+        description:String
     }
     input DeleteNote
     {
