@@ -72,7 +72,7 @@ const labelResolvers = {
                         let itemToBeRemoved = checkLabel.noteId[index];
                         await labelModel.findOneAndUpdate(
                             {
-                                labelName: input.labelname
+                                labelname: input.labelname
                             },
                             {
                                 $pull: {
@@ -81,18 +81,42 @@ const labelResolvers = {
                             }
                         )
                         return ({
-                            labelName: "Deleted"
+                            labelname: input.labelname
                         })
                     }
                     index++;
                 }
-                return new ApolloError.UserInputError('Note not found');
+                return ({
+                    labelname: input.labelname
+                })
             }
             catch (error) {
                 console.log(error);
                 return new ApolloError.ApolloError('Internal Server Error');
             }
-        }
+        },
+        editLabel: async (_, { input }, context) => {
+            try {
+              if (!context.id) {
+                return new ApolloError.AuthenticationError('UnAuthenticated');
+              }
+              const checkLabel = await labelModel.findOne({ labelName: input.labelname });
+              if(!checkLabel)
+              {
+                return new ApolloError.UserInputError('Label not found');
+              }
+              await labelModel.findOneAndUpdate(checkLabel.labelName, {
+                labelName:input.newlabelname 
+              }, { new: true });
+              return ({
+                labelname: input.labelname
+            })
+            }
+            catch (error) {
+              console.log(error);
+              return new ApolloError.ApolloError('Internal Server Error');
+            }
+          },
     }
 }
 module.exports = labelResolvers;

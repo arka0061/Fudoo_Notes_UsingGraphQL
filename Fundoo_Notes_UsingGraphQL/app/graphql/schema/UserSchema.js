@@ -71,6 +71,11 @@ module.exports = gql(`
     {
         labelname:String
     }
+    input EditLabel
+    {
+        labelname:String!
+        newlabelname:String!
+    }
     input DeleteLabelInput
     {
         noteID:ID
@@ -81,6 +86,7 @@ module.exports = gql(`
         notes:[Note!]!
     }
     type Mutation{
+        editLabel(input:EditLabel):Label
         createLabel(input:LabelInput):Label
         deleteLabel(input:DeleteLabelInput):Label
         getNotes:[Note!]!
