@@ -62,11 +62,33 @@ module.exports = gql(`
     {
         noteId:String!
     }
+    input LabelInput
+    {
+        noteID:ID!
+        labelname:String!
+    }
+    type Label
+    {
+        labelname:String
+    }
+    input EditLabel
+    {
+        labelname:String!
+        newlabelname:String!
+    }
+    input DeleteLabelInput
+    {
+        noteID:ID
+        labelname:String!
+    }
     type Query{
         users:[User!]!
         notes:[Note!]!
     }
     type Mutation{
+        editLabel(input:EditLabel):Label
+        createLabel(input:LabelInput):Label
+        deleteLabel(input:DeleteLabelInput):Label
         getNotes:[Note!]!
         createNote( input:NoteInput):Note
         editNote(input:NoteEdit):Note
