@@ -81,11 +81,31 @@ module.exports = gql(`
         noteID:ID
         labelname:String!
     }
+    type GetLabels
+    {
+        _id:ID
+        userId:String
+        noteId:[String]
+        labelName:String
+    }
     type Query{
         users:[User!]!
         notes:[Note!]!
+        getLabel:[GetLabels!]!
+    }
+    input SearchLabel
+    {
+        labelname:String!
+    }
+    type SearchLabelReturn
+    {
+       _id:String
+       emailId:String
+       title:String
+       description:String
     }
     type Mutation{
+        searchLabel(input:SearchLabel):[SearchLabelReturn]
         editLabel(input:EditLabel):Label
         createLabel(input:LabelInput):Label
         deleteLabel(input:DeleteLabelInput):Label
