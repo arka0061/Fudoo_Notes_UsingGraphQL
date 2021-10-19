@@ -55,7 +55,10 @@ describe("Mutations", () => {
     tester = new EasyGraphQLTester(userSchema);
   });
 
+
   describe("Mutations", () => {
+
+    //createUser Mutation Test Cases
     test("Given_createUser_MutationShouldPass_IfTheFirstArgIsFalse_AndTheInputIsEmpty", () => {
       const mutation = `
         mutation createUser($input: UserInput!) {
@@ -111,6 +114,173 @@ describe("Mutations", () => {
         email: "arka.spectacular@gmail.com",
         password: "lkjoi@!#"
       });
+    });
+
+
+    //loginUser Mutation Testing
+    test("Given_loginUser_MutationShouldPass_IfTheFirstArgIsFalse_AndTheInputIsEmpty", () => {
+      const mutation = `
+        mutation loginUser($input:LoginInput) {
+          loginUser(input: $input) {
+            _id
+            token
+            firstName
+            lastName
+            email
+            getNotes
+          }
+        }
+      `;
+      // First arg: false because the query is valid but the input value is empty
+      // Second arg: query to test
+      // Third argument is the input of the mutation
+      tester.test(false, mutation, {});
+    });
+    test("Given_loginUser_MutationShouldPass_IfTheFirstArg_IsFalse_And_TheInputHasInvalidField", () => {
+      const mutation = `
+      mutation loginUser($input:InvalidInput) {
+        loginUser(input: $input) {
+          _id
+          token
+          firstName
+          lastName
+          email
+          getNotes
+        }
+      }
+      `;
+      // First arg: false because the mutation is valid but the input value has invalid field
+      // Second arg: mutation to test
+      // Third argument is the input of the mutation
+      tester.test(false, mutation, [
+        {
+          firstName: "Arka",
+          lastName: "parui",
+          email: "arka.spectacular@gmail.com",
+        }
+      ]);
+    });
+    test("Given_loginUser_MutationShouldPass_IfTheFirstArgIsTrue_And_TheInputIsValid", () => {
+      const mutation = `
+      mutation loginUser($input:LoginInput) {
+        loginUser(input: $input) {
+          _id
+          token
+          firstName
+          lastName
+          email
+        }
+      }
+      `;
+      // First arg: true because the mutation is valid
+      // Second arg: mutation to test
+      // Third argument is the input of the mutation
+      tester.test(true, mutation, [{
+        _id: "6163d84a2137afa6e34d6c86",
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNjNkODE4MjEzN2FmYTZlMzRkNmM4MyIsImVtYWlsIjoiYXJrYS5zcGVjdGFjdWxhckBnbWFpbC5jb20iLCJpYXQiOjE2MzM5MzQ0Mjd9.rfwA-VzUFhfYfrUjk_TcolrzrU3mJOkODwODrstdKYc",
+        firstName: "Arka",
+        lastName: "parui",
+        email: "arka.spectacular@gmail.com",
+      }]);
+    });
+
+    //forgotpassword Mutation Testing
+    test("Given_forgotpassword_MutationShouldPass_IfTheFirstArgIsFalse_AndTheInputIsEmpty", () => {
+      const mutation = `
+        mutation forgotpassword($input:ForgotPass) {
+          forgotpassword(input: $input) {
+    
+          }
+        }
+      `;
+      // First arg: false because the query is valid but the input value is empty
+      // Second arg: query to test
+      // Third argument is the input of the mutation
+      tester.test(false, mutation,[]);
+    });
+    test("Given_forgotpassword_MutationShouldPass_IfTheFirstArg_IsFalse_And_TheInputHasInvalidField", () => {
+      const mutation = `
+      mutation forgotpassword($input:InvalidInput) {
+        forgotpassword(input: $input) {
+          email
+        }
+      }
+      `;
+      // First arg: false because the mutation is valid but the input value has invalid field
+      // Second arg: mutation to test
+      // Third argument is the input of the mutation
+      tester.test(false, mutation, [
+        {
+          email: "arka.spectacular@gmail.com",
+        }
+      ]);
+    });
+    test("Given_forgotpassword_MutationShouldPass_IfTheFirstArgIsTrue_And_TheInputIsValid", () => {
+      const mutation = `
+      mutation forgotpassword($input:ForgotPass) {
+        forgotpassword(input: $input) {
+          email
+        }
+      }
+      `;
+      // First arg: true because the mutation is valid
+      // Second arg: mutation to test
+      // Third argument is the input of the mutation
+      tester.test(true, mutation, [{
+        email: "arka.spectacular@gmail.com",
+      }]);
+    });
+
+    //resetpassword Mutation Testing
+    test("Given_resetpassword_MutationShouldPass_IfTheFirstArgIsFalse_AndTheInputIsEmpty", () => {
+      const mutation = `
+        mutation resetpassword($input:ResetPass) {
+          resetpassword(input: $input) {
+            mailcode:String!
+            newpassword:String!
+          }
+        }
+      `;
+      // First arg: false because the query is valid but the input value is empty
+      // Second arg: query to test
+      // Third argument is the input of the mutation
+      tester.test(false, mutation,[]);
+    });
+    test("Given_resetpassword_MutationShouldPass_IfTheFirstArg_IsFalse_And_TheInputHasInvalidField", () => {
+      const mutation = `
+      mutation resetpassword($input:InvalidInput) {
+        resetpassword(input: $input) {
+          invalid
+          newpassword
+        }
+      }
+      `;
+      // First arg: false because the mutation is valid but the input value has invalid field
+      // Second arg: mutation to test
+      // Third argument is the input of the mutation
+      tester.test(false, mutation, [
+        {
+         email:"arka.spectacular@gmail.com",
+         newapassword:"lkjnm@!#$"
+        }
+      ]);
+    });
+    test("Given_resetpassword_MutationShouldPass_IfTheFirstArgIsTrue_And_TheInputIsValid", () => {
+      const mutation = `
+      mutation resetpassword($input:ResetPass) {
+        resetpassword(input: $input) {
+          email
+          newpassword
+        }
+      }
+      `;
+      // First arg: true because the mutation is valid
+      // Second arg: mutation to test
+      // Third argument is the input of the mutation
+      tester.test(true, mutation, [{
+        email:"arka.spectacular@gmail.com",
+        newapassword:"lkjnm@!#$"
+      }]);
     });
   })
 })
