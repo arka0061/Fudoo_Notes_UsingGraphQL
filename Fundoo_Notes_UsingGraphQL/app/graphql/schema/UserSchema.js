@@ -88,11 +88,6 @@ module.exports = gql(`
         noteId:[String]
         labelName:String
     }
-    type Query{
-        users:[User!]!
-        notes:[Note!]!
-        getLabel:[GetLabels!]!
-    }
     input SearchLabel
     {
         labelname:String!
@@ -103,9 +98,20 @@ module.exports = gql(`
        emailId:String
        title:String
        description:String
+       Labelname:String 
+    }
+    type Query{
+        users:[User!]!
+        notes:[Note!]!
+        getLabel:[GetLabels!]!
+    }
+    type checss
+    {
+        getLabelContent:[SearchLabelReturn]
+        labels:[GetLabels]
     }
     type Mutation{
-        searchLabel(input:SearchLabel):[SearchLabelReturn]
+        searchLabel(input:SearchLabel):checss
         editLabel(input:EditLabel):Label
         createLabel(input:LabelInput):Label
         deleteLabel(input:DeleteLabelInput):Label
