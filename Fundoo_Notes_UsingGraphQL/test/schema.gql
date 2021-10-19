@@ -1,4 +1,4 @@
- type User{
+type User{
         _id:ID!
         firstName:String!
         lastName:String!
@@ -70,8 +70,9 @@
     }
     input EditLabel
     {
+        noteID:ID
         labelname:String!
-        newlabelname:String!
+        newlabelname:String
     }
     input DeleteLabelInput
     {
@@ -101,11 +102,16 @@
         notes:[Note!]!
         getLabel:[GetLabels!]!
     }
+    type checss
+    {
+        getLabelContent:[SearchLabelReturn]
+        labels:[GetLabels]
+    }
     type Mutation{
-        searchLabel(input:SearchLabel):[SearchLabelReturn]
-        editLabel(input:EditLabel):Label
-        createLabel(input:LabelInput):Label
-        deleteLabel(input:DeleteLabelInput):Label
+        searchLabel(input:SearchLabel):checss
+        editLabel(input:EditLabel):String
+        createLabel(input:LabelInput):String
+        deleteLabel(input:DeleteLabelInput):String
         getNotes:[Note!]!
         createNote( input:NoteInput):Note
         editNote(input:NoteEdit):Note
