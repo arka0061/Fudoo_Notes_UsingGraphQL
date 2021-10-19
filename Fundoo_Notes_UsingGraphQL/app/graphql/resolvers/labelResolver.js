@@ -15,30 +15,25 @@ const labelResolvers = {
                 if (!context.id) {
                     return new ApolloError.AuthenticationError('UnAuthenticated');
                 }
-                const checkNote = await labelModel.findOne({ noteId: input.noteID });
-                if (checkNote) {
-                    return new ApolloError.UserInputError('This note is already added');
-                }
                 const checkLabel = await labelModel.findOne({ labelName: input.labelname });
-                //console.log(checkLabel)
                 if (checkLabel) {
+                    for (index = 0; index < checkLabel.noteId.length; index++) {
+                        if (JSON.stringify(checkLabel.noteId[index]) === JSON.stringify(input.noteID)) {
+                            return new ApolloError.UserInputError('This note is already added');
+                        }
+                    }
                     checkLabel.noteId.push(input.noteID)
                     await checkLabel.save();
-                    return ({
-                        labelname: input.labelname
-                    })
+                    return "Note Pushed Into Existing Label Sucessfully"
                 }
                 const labelmodel = new labelModel({
                     userId: context.id,
                     noteId: input.noteID,
                     labelName: input.labelname,
                 });
-
                 //labelmodel.noteId.push(input.noteID)
                 await labelmodel.save();
-                return ({
-                    labelname: input.labelname
-                })
+                return "New Label Created Sucessfully"
             }
             catch (error) {
                 console.log(error);
@@ -55,35 +50,11 @@ const labelResolvers = {
                 if (!checkLabel) {
                     return new ApolloError.UserInputError('Label is not present');
                 }
-                const checkNote = await labelModel.findOne({ noteId: input.noteID });
-                if (!checkNote) {
-                    await labelModel.findByIdAndDelete(checkLabel.id);
-                }
-                //console.log(JSON.stringify(checkNote.noteId[0]))
-                let index = 0;
-                while (index < checkLabel.noteId.length) {
-                    if (JSON.stringify(checkLabel.noteId[index]) === JSON.stringify(input.noteID)) {
-                        let itemToBeRemoved = checkLabel.noteId[index];
-                        console.log(itemToBeRemoved)
-                        await labelModel.findOneAndUpdate(
-                            {
-                                labelName: input.labelname
-                            },
-                            {
-                                $pull: {
-                                    noteId: itemToBeRemoved
-                                },
-                            }
-                        )
-                        return ({
-                            labelname: input.labelname
-                        })
-                    }
-                    index++;
-                }
-                return ({
-                    labelname: input.labelname
-                })
+                await labelModel.findByIdAndDelete(checkLabel.id);
+                // return ({
+                //     labelname: input.labelname
+                // })
+                return "Deleted Sucessfully"
             }
             catch (error) {
                 console.log(error);
@@ -96,14 +67,44 @@ const labelResolvers = {
                 if (!context.id) {
                     return new ApolloError.AuthenticationError('UnAuthenticated');
                 }
-                //{ $regex: /Ghost/, $options: 'i' } 
                 const checkLabel = await labelModel.findOne({ labelName: input.labelname });
                 if (!checkLabel) {
                     return new ApolloError.UserInputError('Label not found');
                 }
-                await labelModel.findOneAndUpdate(checkLabel.labelName, {
-                    labelName: input.newlabelname
-                }, { new: true });
+                if (input.labelname && input.newlabelname != null) {
+                    await labelModel.findOneAndUpdate({ labelName: input.labelname }, {
+                        labelName: input.newlabelname
+                    }, { new: true });
+                    return "LabelName Edited Sucessfully"
+                }
+                const checkNote = await labelModel.findOne({ noteId: input.noteID });
+                if (!checkNote) {
+                    return new ApolloError.UserInputError('Note not found');
+                }
+                let index = 0;
+                while (index < checkLabel.noteId.length) {
+                    if (JSON.stringify(checkLabel.noteId[index]) === JSON.stringify(input.noteID)) {
+                        let itemToBeRemoved = checkLabel.noteId[index];
+                        console.log(itemToBeRemoved)
+                        if(checkLabel.noteId.length===1)
+                        {
+                            await labelModel.findByIdAndDelete(checkLabel.id);
+                            return "Note Removed From Label Sucessfully"
+                        }
+                        await labelModel.findOneAndUpdate(
+                            {
+                                labelName: input.labelname
+                            },
+                            {
+                                $pull: {
+                                    noteId: itemToBeRemoved
+                                },
+                            }
+                        )
+                        return "Note Removed From Label Sucessfully"
+                    }
+                    index++;
+                }
                 return ({
                     labelname: input.labelname
                 })
@@ -113,25 +114,7 @@ const labelResolvers = {
                 return new ApolloError.ApolloError('Internal Server Error');
             }
         },
-        // searchLabel: async (_, { input }, context) => {
-        //     try {
-        //         if (!context.id) {
-        //             return new ApolloError.AuthenticationError('UnAuthenticated');
-        //         }
-        //         const getLabel = await labelModel.findOne({ labelName: input.labelname });
-        //         if (!getLabel) {
-        //             return new ApolloError.UserInputError('User has not created any labels');
-        //         }
-        //         const getNotes = await labelModel.
-        //             findOne({ labelName: input.labelname }).
-        //             populate('noteId')
-        //         return getNotes.noteId
-        //     }
-        //     catch (error) {
-        //         console.log(error);
-        //         return new ApolloError.ApolloError('Internal Server Error');
-        //     }
-        // },
+        //search Label api
         searchLabel: async (_, { input }, context) => {
             try {
                 if (!context.id) {
@@ -152,10 +135,7 @@ const labelResolvers = {
                     array.push(getNotes.noteId)
                     index++;
                 }
-                function flatten(arr) {
-                    return arr.flat(Infinity)
-                }
-                const newarray = flatten(array)
+                const newarray = array.flat()
                 return ({ getLabelContent: newarray, labels: getLabel })
             }
             catch (error) {
@@ -163,7 +143,6 @@ const labelResolvers = {
                 return new ApolloError.ApolloError('Internal Server Error');
             }
         },
-
     }
 }
 module.exports = labelResolvers;

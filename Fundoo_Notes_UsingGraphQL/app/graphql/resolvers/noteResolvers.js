@@ -1,10 +1,11 @@
 const ApolloError = require('apollo-server-errors');
 const userModel = require('../../models/user.model');
 const noteModel = require('../../models/note.model');
+const labelModel = require('../../models/label.model');
 
 const noteResolvers = {
   Query: {
-    notes: async () =>await noteModel.find()
+    notes: async () => await noteModel.find()
   },
   Mutation: {
     //getNotes Mutation
@@ -89,20 +90,36 @@ const noteResolvers = {
         while (index < checkNotes.length) {
           if (checkNotes[index].id === input.noteId) {
             await noteModel.findByIdAndDelete(checkNotes[index]);
-            return ({
-              title: checkNotes[index].title,
-              description: checkNotes[index].description
-            })
+            const checkLabel = await labelModel.findOne({ noteId: input.noteId });
+            if (checkLabel) {
+              if (checkLabel.noteId.length === 1) {
+                await labelModel.findByIdAndDelete(checkLabel.id);
+              }
+              await labelModel.findOneAndUpdate(
+                {
+                  labelName: checkLabel.labelName
+                },
+                {
+                  $pull: {
+                    noteId: input.noteId
+                  },
+                }
+              )
+            }
+              return ({
+                title: checkNotes[index].title,
+                description: checkNotes[index].description
+              })
+            }
+            index++;
           }
-          index++;
+          return new ApolloError.UserInputError('Note with the given id was not found');
         }
-        return new ApolloError.UserInputError('Note with the given id was not found');
-      }
       catch (error) {
-        console.log(error);
-        return new ApolloError.ApolloError('Internal Server Error');
+          console.log(error);
+          return new ApolloError.ApolloError('Internal Server Error');
+        }
       }
-    }
   }
-}
+  }
 module.exports = noteResolvers;

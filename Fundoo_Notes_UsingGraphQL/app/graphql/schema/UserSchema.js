@@ -73,8 +73,9 @@ module.exports = gql(`
     }
     input EditLabel
     {
+        noteID:ID
         labelname:String!
-        newlabelname:String!
+        newlabelname:String
     }
     input DeleteLabelInput
     {
@@ -98,7 +99,6 @@ module.exports = gql(`
        emailId:String
        title:String
        description:String
-       Labelname:String 
     }
     type Query{
         users:[User!]!
@@ -112,9 +112,9 @@ module.exports = gql(`
     }
     type Mutation{
         searchLabel(input:SearchLabel):checss
-        editLabel(input:EditLabel):Label
-        createLabel(input:LabelInput):Label
-        deleteLabel(input:DeleteLabelInput):Label
+        editLabel(input:EditLabel):String
+        createLabel(input:LabelInput):String
+        deleteLabel(input:DeleteLabelInput):String
         getNotes:[Note!]!
         createNote( input:NoteInput):Note
         editNote(input:NoteEdit):Note
