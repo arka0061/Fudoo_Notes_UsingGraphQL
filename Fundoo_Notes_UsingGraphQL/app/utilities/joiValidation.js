@@ -1,6 +1,18 @@
+/**************************************************************************************************************
+ * @description   : It is use to validate the inputs we are getting from client side using joi and
+ *                  also using Regular expression to follow the pattern properly.
+ * @package       : joi
+ * @file          : app/utilities/joiValidation.js
+ * @author        : Arka Parui
+*****************************************************************************************************************/
+
 const Joi = require('joi');
-const objectId=require('joi-objectid');
 class joiValidation {
+
+    /**
+ * @description   : validating all parameters we are getting from the user for registration
+ * @method        : string, min, required, regex pattern
+*/
     authRegister =
         Joi.object({
             firstName: Joi.string()
@@ -25,6 +37,10 @@ class joiValidation {
             
         })
 
+          /**
+ * @description   : validating all parameters we are getting from the user for login
+ * @method        : string, min, required, regex pattern
+*/
     authLogin =
         Joi.object({
             email: Joi.string()
