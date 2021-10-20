@@ -1,3 +1,11 @@
+/**************************************************************************************************************
+ * @description   : It is used for making mail Schema in database and storing mail info
+ * temporarily
+ * @package       : mongoose
+ * @file          : app/models/mail.model.js
+ * @author        : Arka Parui
+*****************************************************************************************************************/
+
 const mongoose = require('mongoose');
 const mailSchema = mongoose.Schema({
   mail:

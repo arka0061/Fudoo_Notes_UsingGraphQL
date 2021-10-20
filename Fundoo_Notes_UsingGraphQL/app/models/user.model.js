@@ -1,3 +1,10 @@
+/**************************************************************************************************************
+ * @description   : It is used for making user Schema in database and storing user info
+ * @package       : mongoose
+ * @file          : app/models/user.model.js
+ * @author        : Arka Parui
+*****************************************************************************************************************/
+
 const mongoose = require('mongoose');
 const userSchema = mongoose.Schema({
     firstName: {

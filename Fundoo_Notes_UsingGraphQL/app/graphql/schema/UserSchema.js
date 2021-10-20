@@ -1,3 +1,11 @@
+/***********************************************************************************
+ * @description   : This file contains all the schemas required for execution
+ *  of queries in graphql
+ * @package       : {gql} from apollo-server-express
+ * @file          : UserSchema.js
+ * @author        : Arka Parui
+************************************************************************************/
+
 const { gql } = require('apollo-server-express');
 
 module.exports = gql(`

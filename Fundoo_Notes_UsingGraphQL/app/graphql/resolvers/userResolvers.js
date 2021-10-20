@@ -1,3 +1,15 @@
+/*********************************************************************
+ * Execution    : 1. Default node with npm   cmd> node server.js
+ *                2. If nodemon installed    cmd> npm start
+ * 
+ * Purpose      : Controls the operations of user creation and other CRUD
+ * 
+ * @package     : bcrypt,apollo-server-errors
+ * @file        : app/graphql/resolvers/userResolvers.js
+ * @overview    : controls user creation, update and retrieval tasks
+ * @module      : this is necessary to create new user.
+ * @author      : Arka Parui
+ *********************************************************************/
 const bcrypt = require('bcryptjs');
 const ApolloError = require('apollo-server-errors');
 const userModel = require('../../models/user.model');
@@ -11,11 +23,20 @@ const mailModel = require('../../models/mail.model');
 const userResolvers = {
 
   Query: {
+
+    /**
+      * @description Query to get all users from usermodel Schema in Database
+      */
     users: async () => await userModel.find(),
   },
 
   Mutation: {
-    // create user mutation
+
+    /**
+      * @description Mutation to get create user and store them in database
+      * @param {*} empty
+      * @param {*} input 
+      */
     createUser: async (_, { input }) => {
       try {
         const usermodel = new userModel({
@@ -46,7 +67,12 @@ const userResolvers = {
         return new ApolloError.ApolloError('Internal Server Error');
       }
     },
-    // login user mutation
+
+    /**
+     * @description Mutation to get login user and return login credentials with token
+     * @param {*} empty
+     * @param {*} input 
+     */
     loginUser: async (_, { input }) => {
       try {
         const loginmodel = {
@@ -85,18 +111,22 @@ const userResolvers = {
       }
     },
 
-    // forgot password mutation
+    /**
+     * @description Mutation to get send email to a registered email id for mailcode
+     * to reset the password of the existing account
+     * @param {*} empty
+     * @param {*} input 
+     */
     forgotpassword: async (_, { input }) => {
       try {
         const userPresent = await userModel.findOne({ email: input.email });
         if (!userPresent) {
           return new ApolloError.AuthenticationError('User is not Registered', { email: 'Not Registered' });
         }
-        const check=await mailModel.find({mail:input.email})
-       if(check.length!=0)
-       {
-        return new ApolloError.UserInputError('Mail code already sent');
-       }
+        const check = await mailModel.find({ mail: input.email })
+        if (check.length != 0) {
+          return new ApolloError.UserInputError('Mail code already sent');
+        }
         sendinfobymail.getMailDetails(userPresent.email, (error, data) => {
           if (!data) {
             return new ApolloError.ApolloError('Failed to send Email');
@@ -110,16 +140,21 @@ const userResolvers = {
       }
     },
 
-    // reset password mutation
+    /**
+     * @description Mutation to set newpassword of the registered account by using mailcode
+     * sent in the forgetpassword api
+     * @param {*} empty
+     * @param {*} input 
+     * @param {*} context
+     */
     resetpassword: async (_, { input }, context) => {
       try {
         if (!context.id) {
           return new ApolloError.AuthenticationError('UnAuthenticated');
         }
         const userPresent = await mailModel.find({ mail: context.email });
-        if(userPresent.length===0)
-        {
-         return new ApolloError.UserInputError('Mailcode expired');
+        if (userPresent.length === 0) {
+          return new ApolloError.UserInputError('Mailcode expired');
         }
         const checkCode = sendinfobymail.sendCode(input.mailcode, userPresent);
         if (checkCode === 'false') {

@@ -1,3 +1,10 @@
+/**************************************************************************************************************
+ * @description   : It is used for making label Schema in database and storing label info
+ * @package       : mongoose
+ * @file          : app/models/label.model.js
+ * @author        : Arka Parui
+*****************************************************************************************************************/
+
 const mongoose = require('mongoose');
 const labelSchema = mongoose.Schema({
     userId: {

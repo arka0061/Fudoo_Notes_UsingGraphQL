@@ -1,15 +1,37 @@
+/*********************************************************************
+ * Execution    : 1. Default node with npm   cmd> node server.js
+ *                2. If nodemon installed    cmd> npm start
+ * 
+ * Purpose      : Controls the operations of label creation and other CRUD
+ * 
+ * @package     : apollo-server-errors
+ * @file        : app/graphql/resolvers/labelResolvers.js
+ * @overview    : controls note creation,deletetion update and retrieval tasks
+ * @module      : this is necessary to create new notes
+ * @author      : Arka Parui
+ *********************************************************************/
+
 const ApolloError = require('apollo-server-errors');
 const labelModel = require('../../models/label.model');
 
 const labelResolvers = {
     Query: {
+        /**
+    * @description Query to get all labels from labelModel Schema in Database
+    */
+
         getLabel: async () => {
             const labels = await labelModel.find()
             return labels
         }
     },
     Mutation: {
-        // createlabel mutation
+        /**
+     * @description Mutation to create label
+     * @param {*} empty
+     * @param {*} input 
+     * @param {*} context
+     */
         createLabel: async (_, { input }, context) => {
             try {
                 if (!context.id) {
@@ -40,7 +62,13 @@ const labelResolvers = {
                 return new ApolloError.ApolloError('Internal Server Error');
             }
         },
-        //deleteLabel mutation
+
+        /**
+    * @description Mutation to delete a label of a registered user
+    * @param {*} empty
+    * @param {*} input
+    * @param {*} context
+    */
         deleteLabel: async (_, { input }, context) => {
             try {
                 if (!context.id) {
@@ -61,7 +89,13 @@ const labelResolvers = {
                 return new ApolloError.ApolloError('Internal Server Error');
             }
         },
-        //editLabel mutation
+
+        /**
+    * @description Mutation to edit label
+    * @param {*} empty
+    * @param {*} input 
+    * @param {*} context
+    */
         editLabel: async (_, { input }, context) => {
             try {
                 if (!context.id) {
@@ -86,8 +120,7 @@ const labelResolvers = {
                     if (JSON.stringify(checkLabel.noteId[index]) === JSON.stringify(input.noteID)) {
                         let itemToBeRemoved = checkLabel.noteId[index];
                         console.log(itemToBeRemoved)
-                        if(checkLabel.noteId.length===1)
-                        {
+                        if (checkLabel.noteId.length === 1) {
                             await labelModel.findByIdAndDelete(checkLabel.id);
                             return "Note Removed From Label Sucessfully"
                         }
@@ -114,7 +147,13 @@ const labelResolvers = {
                 return new ApolloError.ApolloError('Internal Server Error');
             }
         },
-        //search Label api
+
+        /**
+    * @description Mutation to search a label
+    * @param {*} empty
+    * @param {*} input 
+    * @param {*} context
+    */
         searchLabel: async (_, { input }, context) => {
             try {
                 if (!context.id) {

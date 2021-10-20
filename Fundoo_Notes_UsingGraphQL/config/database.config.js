@@ -1,3 +1,10 @@
+/**************************************************************************************************************
+ * @description   : It is used for connecting to database
+ * @package       : mongoose
+ * @file          : app/config/database.config.js
+ * @author        : Arka Parui
+*****************************************************************************************************************/
+
 const mongoose = require('mongoose');
 exports.dbConnection=()=>{
 mongoose.Promise = global.Promise;
