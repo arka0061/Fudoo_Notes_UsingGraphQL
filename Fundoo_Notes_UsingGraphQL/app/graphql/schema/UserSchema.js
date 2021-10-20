@@ -105,13 +105,13 @@ module.exports = gql(`
         notes:[Note!]!
         getLabel:[GetLabels!]!
     }
-    type checss
+    type MergedReturnTypes
     {
         getLabelContent:[SearchLabelReturn]
         labels:[GetLabels]
     }
     type Mutation{
-        searchLabel(input:SearchLabel):checss
+        searchLabel(input:SearchLabel):MergedReturnTypes
         editLabel(input:EditLabel):String
         createLabel(input:LabelInput):String
         deleteLabel(input:DeleteLabelInput):String
