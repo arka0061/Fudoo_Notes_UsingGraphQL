@@ -240,7 +240,7 @@ describe("Mutations", () => {
                   labelName
                   noteId
                 }
-                getLabelContent
+                getNoteInfo
                 {
                   title
                   description

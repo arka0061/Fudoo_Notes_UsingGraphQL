@@ -173,7 +173,12 @@ const noteResolvers = {
         return new ApolloError.ApolloError('Internal Server Error');
       }
     },
-
+    /**
+      * @description Mutation to display notes in trash
+      * @param {*} empty
+      * @param {*} empty 
+      * @param {*} context
+      */
     displayTrash: async (_, __, context) => {
       try {
         if (!context.id) {
@@ -190,7 +195,12 @@ const noteResolvers = {
         return new ApolloError.ApolloError('Internal Server Error');
       }
     },
-
+    /**
+      * @description Mutation to restore notes from trash
+      * @param {*} empty
+      * @param {*} input
+      * @param {*} context
+      */
     restoreNote: async (_, { input }, context) => {
       try {
         if (!context.id) {
@@ -239,11 +249,17 @@ const noteResolvers = {
         return new ApolloError.ApolloError('Internal Server Error');
       }
     },
+    /**
+      * @description Mutation to delete notes permanently
+      * @param {*} empty
+      * @param {*} input 
+      * @param {*} context
+      */
     deleteNoteForever: async (_, { input }, context) => {
       try {
         const checkNotes = await trashModel.find({ noteID: input.noteId });
         if (checkNotes.length === 0) {
-          return new ApolloError.UserInputError('No Notes Are Presnt in the trash');
+          return new ApolloError.UserInputError('No Notes Are Present in the trash');
         }
         let index=0;
         while (index < checkNotes.length) {
@@ -260,8 +276,7 @@ const noteResolvers = {
         console.log(error);
         return new ApolloError.ApolloError('Internal Server Error');
       }
-    },
-
+    }
   }
 }
 module.exports = noteResolvers;
