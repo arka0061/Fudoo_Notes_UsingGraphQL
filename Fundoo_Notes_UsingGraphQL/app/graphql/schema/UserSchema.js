@@ -70,6 +70,18 @@ module.exports = gql(`
     {
         noteId:String!
     }
+    input RestoreNote
+    {
+        noteId:ID!
+    }
+    type TrashNotes
+    {
+        noteID:ID
+        email:String
+        label:String
+        title:String
+        description:String
+    }
     input LabelInput
     {
         noteID:ID!
@@ -87,7 +99,6 @@ module.exports = gql(`
     }
     input DeleteLabelInput
     {
-        noteID:ID
         labelname:String!
     }
     type GetLabels
@@ -115,7 +126,7 @@ module.exports = gql(`
     }
     type MergedReturnTypes
     {
-        getLabelContent:[SearchLabelReturn]
+        getNoteInfo:[SearchLabelReturn]
         labels:[GetLabels]
     }
     type Mutation{
@@ -127,6 +138,9 @@ module.exports = gql(`
         createNote( input:NoteInput):Note
         editNote(input:NoteEdit):Note
         deleteNote(input:DeleteNote):Note
+        deleteNoteForever(input:DeleteNote):String
+        restoreNote(input:RestoreNote):String
+        displayTrash:[TrashNotes!]!
         createUser( input:UserInput):User
         forgotpassword( input:ForgotPass):forgotReturn
         loginUser( input:LoginInput):authUser
