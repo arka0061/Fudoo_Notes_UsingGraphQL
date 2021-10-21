@@ -10,6 +10,7 @@
  * @module      : this is necessary to create new user.
  * @author      : Arka Parui
  *********************************************************************/
+
 const bcrypt = require('bcryptjs');
 const ApolloError = require('apollo-server-errors');
 const userModel = require('../../models/user.model');

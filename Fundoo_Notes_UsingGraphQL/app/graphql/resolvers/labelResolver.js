@@ -7,7 +7,7 @@
  * @package     : apollo-server-errors
  * @file        : app/graphql/resolvers/labelResolvers.js
  * @overview    : controls note creation,deletetion update and retrieval tasks
- * @module      : this is necessary to create new notes
+ * @module      : this is necessary to create new labels
  * @author      : Arka Parui
  *********************************************************************/
 
@@ -119,7 +119,6 @@ const labelResolvers = {
                 while (index < checkLabel.noteId.length) {
                     if (JSON.stringify(checkLabel.noteId[index]) === JSON.stringify(input.noteID)) {
                         let itemToBeRemoved = checkLabel.noteId[index];
-                        console.log(itemToBeRemoved)
                         if (checkLabel.noteId.length === 1) {
                             await labelModel.findByIdAndDelete(checkLabel.id);
                             return "Note Removed From Label Sucessfully"
@@ -175,7 +174,7 @@ const labelResolvers = {
                     index++;
                 }
                 const newarray = array.flat()
-                return ({ getLabelContent: newarray, labels: getLabel })
+                return ({ getNoteInfo: newarray, labels: getLabel })
             }
             catch (error) {
                 console.log(error);

@@ -1,4 +1,4 @@
-type User{
+ type User{
         _id:ID!
         firstName:String!
         lastName:String!
@@ -76,7 +76,6 @@ type User{
     }
     input DeleteLabelInput
     {
-        noteID:ID
         labelname:String!
     }
     type GetLabels
