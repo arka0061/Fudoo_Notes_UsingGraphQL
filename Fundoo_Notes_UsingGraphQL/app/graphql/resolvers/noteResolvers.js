@@ -221,14 +221,14 @@ const noteResolvers = {
             await notemodel.save();
             if (!checkNotes[index].label) {
               await trashModel.findByIdAndDelete(checkNotes[index]._id);
-              return `Note with id: ${checkNotes[index]._id} is restored Sucessfully`
+              return `Note is restored Sucessfully`
             }
             const checkLabel = await labelModel.findOne({ labelName: checkNotes[index].label });
             if (checkLabel) {
               checkLabel.noteId.push(input.noteId)
               await checkLabel.save();
               await trashModel.findByIdAndDelete(checkNotes[index]._id);
-              return `Note with id: ${checkNotes[index]._id} is restored Sucessfully`
+              return `Note is restored Sucessfully`
             }
             const labelmodel = new labelModel({
               userId: context.id,
@@ -238,7 +238,7 @@ const noteResolvers = {
             //labelmodel.noteId.push(input.noteID)
             await labelmodel.save();
             await trashModel.findByIdAndDelete(checkNotes[index]._id);
-            return `Note with id: ${checkNotes[index]._id} is restored Sucessfully`
+            return `Note is restored Sucessfully`
           }
           index++;
         }
