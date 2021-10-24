@@ -10,6 +10,7 @@ const graphqlResolver = require('./app/graphql/resolvers/index');
 const dbConfig = require('./config/database.config');
 const express = require('express');
 const isAuth = require('./app/utilities/middleware/is-auth');
+require('./app/utilities/socialAuthentication/passport-setup')
 require('dotenv').config();
 
 //establishing database connection
@@ -25,6 +26,8 @@ const server = new ApolloServer({
 
 //storing express in app
 const app = express();
+
+require("./app/routes/googleroutes/google.routes")(app)
 
 //apply express middleware
 server.applyMiddleware({ app });

@@ -14,6 +14,7 @@
     "apollo-server-errors": "^3.1.0",
     "apollo-server-express": "^2.25.2",
     "bcryptjs": "^2.4.3",
+    "cookie-session": "^1.4.0",
     "dotenv": "^10.0.0",
     "easygraphql-format-error": "0.0.3",
     "easygraphql-tester": "^6.0.1",
@@ -26,6 +27,8 @@
     "mongoose": "^6.0.6",
     "nodemailer": "^6.6.3",
     "nodemon": "^2.0.12",
+    "passport": "^0.5.0",
+    "passport-google-oauth20": "^2.0.0",
     "typeorm": "^0.2.37"
   },
   "devDependencies": {
